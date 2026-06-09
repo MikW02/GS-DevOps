@@ -79,36 +79,78 @@ e 5432 (banco) liberadas no grupo de seguranca de rede.
 
 ### Subir os containers
 
+Clonar o repositorio e entrar na pasta:
+
 ```
 git clone https://github.com/MikW02/GS-DevOps.git
+```
+
+```
 cd GS-DevOps
+```
+
+Subir App + Banco em modo background (-d) e construindo a imagem:
+
+```
 docker compose up -d --build
+```
+
+Conferir os containers em execucao:
+
+```
 docker ps
 ```
 
 ### Ver os logs dos dois containers
 
+Logs do container da aplicacao:
+
 ```
 docker compose logs app
+```
+
+Logs do container do banco:
+
+```
 docker compose logs postgres-db
 ```
 
-### Acessar o terminal dos containers
+### Acessar o terminal dos containers (usuario e diretorio)
+
+Container da aplicacao - usuario conectado (deve ser disasteruser, nao root):
 
 ```
-docker container exec -it app-disasterhelp-rm551382 bash
-pwd        # /opt/disasterhelp
-ls -l
-whoami     # disasteruser (usuario nao root)
-exit
+docker container exec app-disasterhelp-rm551382 whoami
 ```
 
+Container da aplicacao - diretorio de trabalho:
+
 ```
-docker container exec -it postgres-disasterhelp-rm551382 bash
-pwd
-ls -l
-whoami
-exit
+docker container exec app-disasterhelp-rm551382 pwd
+```
+
+Container da aplicacao - estrutura de diretorios:
+
+```
+docker container exec app-disasterhelp-rm551382 ls -l
+```
+
+Container do banco - usuario conectado:
+
+```
+docker container exec postgres-disasterhelp-rm551382 whoami
+```
+
+Container do banco - diretorio atual:
+
+```
+docker container exec postgres-disasterhelp-rm551382 pwd
+```
+
+Container do banco - estrutura de diretorios:
+
+```
+docker container exec postgres-disasterhelp-rm551382 ls -l
 ```
 
 ## Testar o CRUD
@@ -138,10 +180,15 @@ curl -X POST http://localhost:8080/disasterHelp/api/desastre \
   -d '{"tipo":"Deslizamento","descricao":"Encosta instavel apos chuvas","regiao":"Petropolis - RJ","dataPrevista":"2026-06-15"}'
 ```
 
-Read:
+Read (listar todos):
 
 ```
 curl http://localhost:8080/disasterHelp/api/desastre -H "Authorization: Bearer $TOKEN"
+```
+
+Read (buscar por id):
+
+```
 curl http://localhost:8080/disasterHelp/api/desastre/1 -H "Authorization: Bearer $TOKEN"
 ```
 
@@ -167,11 +214,16 @@ Conectar direto no container do banco e rodar os SELECT apos cada operacao do CR
 docker container exec -it postgres-disasterhelp-rm551382 psql -U postgres -d disasterdb
 ```
 
-No psql:
+No psql, listar as duas tabelas (usuario e desastres):
 
 ```
-\dt            -- lista as duas tabelas: usuario e desastres
-\d desastres   -- mostra a coluna usuario_id e a FK para usuario(id)
+\dt
+```
+
+Mostrar a estrutura da tabela desastres (a coluna usuario_id e a FK para usuario):
+
+```
+\d desastres
 ```
 
 Todos os dados da tabela de eventos climaticos (a coluna usuario_id mostra o relacionamento com o usuario):
@@ -194,9 +246,16 @@ Para sair do psql:
 
 ## Encerrar o ambiente
 
+Parar e remover os containers (mantem o volume com os dados):
+
 ```
-docker compose down       # para e remove os containers (mantem o volume)
-docker compose down -v    # remove tambem o volume (apaga os dados)
+docker compose down
+```
+
+Parar e remover tambem o volume nomeado (apaga os dados do banco):
+
+```
+docker compose down -v
 ```
 
 ## Estrutura do repositorio
