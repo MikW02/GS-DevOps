@@ -62,42 +62,18 @@ resposta da API traz os campos `usuarioId` e `responsavel`.
 
 Resumo do fluxo:
 
-- O usuario acessa a API (porta 8080) na VM do Azure e tem acesso apenas ao App.
+- O usuario acessa a API (porta 8080) na VM do Azure e tem acesso ao App.
 - O container da aplicacao Java conversa com o container PostgreSQL pela rede interna disasterhelp-net (porta 5432).
 - Os dados ficam no volume nomeado, garantindo persistencia.
 - A equipe acessa a VM por SSH (porta 22).
 
 ## Como executar (do clone ate a nuvem)
 
-Pre-requisito: uma VM Linux no Azure (Azure for Students) com as portas 22 (SSH), 8080 (app)
-e 5432 (banco) liberadas no grupo de seguranca de rede.
+Pre-requisitos ja instalados na VM Linux do Azure: Docker, Docker Compose e Git. Para conferir as versoes:
 
-### Conectar na VM do Azure
-
-1. No seu computador, abrir o terminal (PowerShell no Windows) e conectar por SSH, usando o
-   IP publico da VM:
-
-   ```
-   ssh azureuser@<IP_PUBLICO_DA_VM>
-   ```
-
-   Confirmar com `yes` na primeira vez e informar a senha do usuario.
-
-2. Instalar Docker, Compose e Git na VM:
-
-   ```
-   sudo apt-get update
-   sudo apt-get install -y docker.io docker-compose-v2 git
-   sudo usermod -aG docker $USER
-   ```
-
-3. Sair e reconectar no SSH para a permissao do Docker valer, depois verificar:
-
-   ```
-   exit
-   ssh azureuser@<IP_PUBLICO_DA_VM>
-   docker --version && docker compose version
-   ```
+```
+docker --version && docker compose version && git --version
+```
 
 ### Subir os containers
 
