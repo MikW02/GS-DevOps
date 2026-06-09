@@ -1,4 +1,7 @@
 # DisasterHelp - DevOps Tools & Cloud Computing
+RM551382 Michael Leon
+RM97677 Lucas Felix
+
 
 Projeto da **Global Solution 2026/1 (FIAP)** - entrega da disciplina **DevOps Tools & Cloud Computing**.
 
