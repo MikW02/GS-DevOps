@@ -34,10 +34,15 @@ A solucao roda em dois containers Docker orquestrados por Docker Compose, na mes
 - `app-disasterhelp-rm551382`: imagem personalizada (build multi-stage), API Java/Spring Boot na porta 8080.
 - `postgres-disasterhelp-rm551382`: imagem oficial postgres:16, banco de dados na porta 5432.
 
+O **build multi-stage** do app acontece em duas etapas dentro do mesmo Dockerfile: na primeira, uma
+imagem com Maven + JDK compila o codigo-fonte e gera o arquivo `.jar`; na segunda, esse `.jar` e
+copiado para uma imagem enxuta so com o Java de execucao (JRE). Dessa forma a imagem final fica
+menor e mais segura, sem carregar as ferramentas de compilacao usadas no build.
+
 Os dados sao gravados em duas tabelas no PostgreSQL:
 
-- `usuario`: usuarios do sistema (usados na autenticacao).
-- `desastres`: eventos climaticos cadastrados (CRUD completo).
+- `usuario`: usuarios do sistema (autenticacao) - CRUD completo.
+- `desastres`: eventos climaticos cadastrados - CRUD completo.
 
 A tabela `desastres` tem a coluna `usuario_id` como chave estrangeira para `usuario(id)`
 (relacionamento N:1, indicando o usuario responsavel pelo registro do desastre). Ao cadastrar um
@@ -55,10 +60,12 @@ resposta da API traz os campos `usuarioId` e `responsavel`.
 
 ![Arquitetura Macro da solucao DisasterHelp](docs/arquitetura.png)
 
-Resumo do fluxo: o usuario acessa a API pela porta 8080 da VM no Azure. Dentro da VM, o Docker
-executa o container da aplicacao e o container do banco, que se comunicam pela rede interna
-`disasterhelp-net`. Os dados do banco ficam em um volume nomeado, mantendo a persistencia mesmo
-que os containers sejam recriados.
+Resumo do fluxo:
+
+- O usuario acessa a API (porta 8080) na VM do Azure e tem acesso apenas ao App.
+- O container da aplicacao Java conversa com o container PostgreSQL pela rede interna disasterhelp-net (porta 5432).
+- Os dados ficam no volume nomeado, garantindo persistencia.
+- A equipe acessa a VM por SSH (porta 22).
 
 ## Como executar (do clone ate a nuvem)
 
