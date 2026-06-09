@@ -47,31 +47,33 @@ que os containers sejam recriados.
 
 ## Como executar (do clone ate a nuvem)
 
-Pre-requisito: uma VM Linux no Azure (Azure for Students) com Docker instalado. Os passos abaixo
-mostram como preparar a VM. Se ja tiver a VM com Docker, pule para a parte "Subir os containers".
+Pre-requisito: uma VM Linux no Azure (Azure for Students) com as portas 22 (SSH), 8080 (app)
+e 5432 (banco) liberadas no grupo de seguranca de rede.
 
-### Criar a VM no Azure
+### Conectar na VM do Azure
 
-1. Acessar o Portal Azure (portal.azure.com) com a conta Azure for Students.
-2. Create a resource > Virtual Machine:
-   - Image: Ubuntu Server 22.04 LTS
-   - Size: B1s ou B2s
-   - Authentication: SSH public key (ou senha)
-   - Username: azureuser
-3. Em Networking, liberar as portas de entrada: 22 (SSH), 8080 (app) e 5432 (banco).
-4. Review + create. Anotar o IP publico da VM.
-5. Conectar por SSH:
+1. No seu computador, abrir o terminal (PowerShell no Windows) e conectar por SSH, usando o
+   IP publico da VM:
 
    ```
    ssh azureuser@<IP_PUBLICO_DA_VM>
    ```
 
-6. Instalar Docker e Compose na VM:
+   Confirmar com `yes` na primeira vez e informar a senha do usuario.
+
+2. Instalar Docker, Compose e Git na VM:
 
    ```
    sudo apt-get update
-   sudo apt-get install -y docker.io docker-compose-plugin git
-   sudo usermod -aG docker $USER && newgrp docker
+   sudo apt-get install -y docker.io docker-compose-v2 git
+   sudo usermod -aG docker $USER
+   ```
+
+3. Sair e reconectar no SSH para a permissao do Docker valer, depois verificar:
+
+   ```
+   exit
+   ssh azureuser@<IP_PUBLICO_DA_VM>
    docker --version && docker compose version
    ```
 
