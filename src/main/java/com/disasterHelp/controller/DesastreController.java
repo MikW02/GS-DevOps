@@ -1,7 +1,10 @@
 package com.disasterHelp.controller;
 
 import com.disasterHelp.model.Desastre;
+import com.disasterHelp.model.Usuario;
 import com.disasterHelp.repository.DesastreRepository;
+import com.disasterHelp.repository.UsuarioRepository;
+import org.springframework.security.core.Authentication;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -31,6 +34,15 @@ public class DesastreController {
     @Autowired
     DesastreRepository desastreRepository;
 
+    @Autowired
+    UsuarioRepository usuarioRepository;
+
+    // Recupera o usuario logado a partir do token (o filtro guarda o email no contexto)
+    private Usuario usuarioLogado(Authentication authentication) {
+        if (authentication == null) return null;
+        return (Usuario) usuarioRepository.findByEmail(authentication.getName()).orElse(null);
+    }
+
     @PostMapping
     @Operation(
             summary = "Cadastro de um evento climático",
@@ -40,7 +52,8 @@ public class DesastreController {
             @ApiResponse(responseCode = "201", description = "Desastre cadastrado com sucesso"),
             @ApiResponse(responseCode = "400", description = "Dados inválidos ou faltando")
     })
-    public ResponseEntity<Object> cadastro(@RequestBody @Valid Desastre desastre) {
+    public ResponseEntity<Object> cadastro(@RequestBody @Valid Desastre desastre, Authentication authentication) {
+        desastre.setUsuario(usuarioLogado(authentication)); // carimba quem criou
         log.info("Salvando desastre: {}", desastre);
         desastreRepository.save(desastre);
         return ResponseEntity.status(HttpStatus.CREATED).body(desastre);
@@ -115,6 +128,7 @@ public class DesastreController {
         var result = desastreRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Desastre não encontrado"));
         desastre.setId(id);
+        desastre.setUsuario(result.getUsuario()); // preserva quem criou
         desastreRepository.save(desastre);
         return ResponseEntity.ok(desastre);
     }

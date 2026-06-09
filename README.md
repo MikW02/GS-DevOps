@@ -25,7 +25,9 @@ Os dados sao gravados em duas tabelas no PostgreSQL:
 - `desastres`: eventos climaticos cadastrados (CRUD completo).
 
 A tabela `desastres` tem a coluna `usuario_id` como chave estrangeira para `usuario(id)`
-(relacionamento N:1, indicando o usuario responsavel pelo registro do desastre).
+(relacionamento N:1, indicando o usuario responsavel pelo registro do desastre). Ao cadastrar um
+desastre, o sistema grava automaticamente o usuario autenticado (do token) como responsavel, e a
+resposta da API traz os campos `usuarioId` e `responsavel`.
 
 ## Tecnologias
 

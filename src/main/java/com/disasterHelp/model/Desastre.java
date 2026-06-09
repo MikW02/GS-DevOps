@@ -1,5 +1,6 @@
 package com.disasterHelp.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.*;
@@ -41,4 +42,17 @@ public class Desastre {
     @JsonIgnore
     @ToString.Exclude
     private Usuario usuario;
+
+    // Campos somente-leitura no JSON: mostram quem criou, sem expor a senha
+    @Transient
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    public Long getUsuarioId() {
+        return usuario != null ? usuario.getId() : null;
+    }
+
+    @Transient
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    public String getResponsavel() {
+        return usuario != null ? usuario.getNome() : null;
+    }
 }
