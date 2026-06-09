@@ -117,39 +117,19 @@ docker compose logs postgres-db
 
 ### Acessar o terminal dos containers (usuario e diretorio)
 
-Container da aplicacao - usuario conectado (deve ser disasteruser, nao root):
+Container da aplicacao - usuario conectado (disasteruser, nao root), diretorio de trabalho e estrutura:
 
 ```
 docker container exec app-disasterhelp-rm551382 whoami
-```
-
-Container da aplicacao - diretorio de trabalho:
-
-```
 docker container exec app-disasterhelp-rm551382 pwd
-```
-
-Container da aplicacao - estrutura de diretorios:
-
-```
 docker container exec app-disasterhelp-rm551382 ls -l
 ```
 
-Container do banco - usuario conectado:
+Container do banco - usuario conectado, diretorio atual e estrutura:
 
 ```
 docker container exec postgres-disasterhelp-rm551382 whoami
-```
-
-Container do banco - diretorio atual:
-
-```
 docker container exec postgres-disasterhelp-rm551382 pwd
-```
-
-Container do banco - estrutura de diretorios:
-
-```
 docker container exec postgres-disasterhelp-rm551382 ls -l
 ```
 
