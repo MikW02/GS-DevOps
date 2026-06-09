@@ -133,95 +133,102 @@ docker container exec postgres-disasterhelp-rm551382 pwd
 docker container exec postgres-disasterhelp-rm551382 ls -l
 ```
 
-## Testar o CRUD
+## Testar o CRUD (pelo Swagger) e evidenciar no banco
 
 A API usa autenticacao JWT. Ja existe um usuario admin criado automaticamente:
 
 - email: admin@disasterHelp.com
 - senha: admin123
 
-Documentacao interativa (Swagger): http://<IP_DA_VM>:8080/swagger-ui.html
-Ao testar de fora da nuvem, trocar `localhost` pelo IP publico da VM.
-
-Login (obter token):
+Abrir a documentacao interativa (Swagger) no navegador (trocar pelo IP publico da VM):
 
 ```
-TOKEN=$(curl -s -X POST http://localhost:8080/DisasterHelp/api/usuario/login \
-  -H "Content-Type: application/json" \
-  -d '{"email":"admin@disasterHelp.com","senha":"admin123"}' | grep -o '"token":"[^"]*"' | cut -d'"' -f4)
-echo $TOKEN
+http://<IP_DA_VM>:8080/swagger-ui/index.html
 ```
 
-Create:
+### Passo 1 - Login (no Swagger)
+
+Em "Usuario" -> POST /DisasterHelp/api/usuario/login -> Try it out -> usar o corpo abaixo -> Execute.
+Copiar o valor de "token" que aparece na resposta.
 
 ```
-curl -X POST http://localhost:8080/disasterHelp/api/desastre \
-  -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json" \
-  -d '{"tipo":"Deslizamento","descricao":"Encosta instavel apos chuvas","regiao":"Petropolis - RJ","dataPrevista":"2026-06-15"}'
+{ "email": "admin@disasterHelp.com", "senha": "admin123" }
 ```
 
-Read (listar todos):
+### Passo 2 - Authorize (no Swagger)
+
+Clicar no botao Authorize (cadeado, canto superior direito), colar apenas o token e confirmar.
+A partir daqui os endpoints protegidos funcionam.
+
+### Passo 3 - Mostrar as duas tabelas e o relacionamento (banco)
+
+Listar as duas tabelas (usuario e desastres):
 
 ```
-curl http://localhost:8080/disasterHelp/api/desastre -H "Authorization: Bearer $TOKEN"
+docker container exec postgres-disasterhelp-rm551382 psql -U postgres -d disasterdb -c "\dt"
 ```
 
-Read (buscar por id):
+Mostrar a estrutura da tabela desastres (coluna usuario_id e a chave estrangeira para usuario):
 
 ```
-curl http://localhost:8080/disasterHelp/api/desastre/1 -H "Authorization: Bearer $TOKEN"
+docker container exec postgres-disasterhelp-rm551382 psql -U postgres -d disasterdb -c "\d desastres"
 ```
 
-Update:
+Estado inicial dos dados:
 
 ```
-curl -X PUT http://localhost:8080/disasterHelp/api/desastre/1 \
-  -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json" \
-  -d '{"tipo":"Enchente","descricao":"Nivel do rio subindo","regiao":"Sao Paulo - Zona Leste","dataPrevista":"2026-06-20"}'
+docker container exec postgres-disasterhelp-rm551382 psql -U postgres -d disasterdb -c "SELECT * FROM desastres ORDER BY id;"
 ```
 
-Delete:
+### Passo 4 - CREATE (no Swagger)
+
+Em "Desastre" -> POST /disasterHelp/api/desastre -> Try it out -> corpo abaixo -> Execute (retorna 201, com usuarioId e responsavel):
 
 ```
-curl -X DELETE http://localhost:8080/disasterHelp/api/desastre/3 -H "Authorization: Bearer $TOKEN"
+{ "tipo": "Deslizamento", "descricao": "Encosta instavel apos chuvas", "regiao": "Petropolis - RJ", "dataPrevista": "2026-06-15" }
 ```
 
-## Evidencia da persistencia no banco (SELECT)
-
-Conectar direto no container do banco e rodar os SELECT apos cada operacao do CRUD:
+Evidencia no banco (a nova linha aparece, id 3):
 
 ```
-docker container exec -it postgres-disasterhelp-rm551382 psql -U postgres -d disasterdb
+docker container exec postgres-disasterhelp-rm551382 psql -U postgres -d disasterdb -c "SELECT * FROM desastres ORDER BY id;"
 ```
 
-No psql, listar as duas tabelas (usuario e desastres):
+### Passo 5 - READ (no Swagger)
+
+Listar todos: GET /disasterHelp/api/desastre -> Execute.
+Buscar por id: GET /disasterHelp/api/desastre/1 -> Execute.
+
+### Passo 6 - UPDATE (no Swagger)
+
+PUT /disasterHelp/api/desastre/3 -> Try it out -> corpo abaixo -> Execute (retorna 200):
 
 ```
-\dt
+{ "tipo": "Enchente", "descricao": "Nivel do rio subindo", "regiao": "Sao Paulo - SP", "dataPrevista": "2026-06-20" }
 ```
 
-Mostrar a estrutura da tabela desastres (a coluna usuario_id e a FK para usuario):
+Evidencia no banco (a linha id 3 aparece alterada):
 
 ```
-\d desastres
+docker container exec postgres-disasterhelp-rm551382 psql -U postgres -d disasterdb -c "SELECT * FROM desastres ORDER BY id;"
 ```
 
-Todos os dados da tabela de eventos climaticos (a coluna usuario_id mostra o relacionamento com o usuario):
+### Passo 7 - DELETE (no Swagger)
+
+DELETE /disasterHelp/api/desastre/3 -> Execute (retorna 204).
+
+Evidencia no banco (a linha id 3 sumiu):
 
 ```
-SELECT * FROM desastres ORDER BY id;
+docker container exec postgres-disasterhelp-rm551382 psql -U postgres -d disasterdb -c "SELECT * FROM desastres ORDER BY id;"
 ```
 
-Todos os dados da tabela de usuarios:
+### Passo 8 - Tabela de usuarios
+
+Mostrar todos os dados da tabela de usuarios:
 
 ```
-SELECT * FROM usuario ORDER BY id;
-```
-
-Para sair do psql:
-
-```
-\q
+docker container exec postgres-disasterhelp-rm551382 psql -U postgres -d disasterdb -c "SELECT * FROM usuario ORDER BY id;"
 ```
 
 ## Encerrar o ambiente
