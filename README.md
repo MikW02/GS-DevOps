@@ -172,13 +172,10 @@ No psql:
 \d desastres   -- mostra a coluna usuario_id e a FK para usuario(id)
 ```
 
-Todos os dados da tabela de eventos climaticos (com o usuario responsavel pelo registro):
+Todos os dados da tabela de eventos climaticos (a coluna usuario_id mostra o relacionamento com o usuario):
 
 ```
-SELECT d.id, d.tipo, d.descricao, d.regiao, d.data_prevista, d.usuario_id, u.nome AS responsavel
-FROM desastres d
-LEFT JOIN usuario u ON u.id = d.usuario_id
-ORDER BY d.id;
+SELECT * FROM desastres ORDER BY id;
 ```
 
 Todos os dados da tabela de usuarios:
