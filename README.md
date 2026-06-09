@@ -38,7 +38,7 @@ resposta da API traz os campos `usuarioId` e `responsavel`.
 
 ## Arquitetura
 
-O diagrama de arquitetura sera adicionado em `docs/arquitetura.png`.
+![Arquitetura Macro da solucao DisasterHelp](docs/arquitetura.png)
 
 Resumo do fluxo: o usuario acessa a API pela porta 8080 da VM no Azure. Dentro da VM, o Docker
 executa o container da aplicacao e o container do banco, que se comunicam pela rede interna
