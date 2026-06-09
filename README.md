@@ -1,5 +1,7 @@
 # DisasterHelp - DevOps Tools & Cloud Computing
 
+Projeto da **Global Solution 2026/1 (FIAP)** - entrega da disciplina **DevOps Tools & Cloud Computing**.
+
 API REST em Java (Spring Boot) para cadastro e gestao de eventos climaticos / desastres,
 conteinerizada com Docker e executada em nuvem (VM no Azure) com dois containers integrados:
 a aplicacao Java e o banco PostgreSQL.
@@ -9,9 +11,22 @@ Containers: `app-disasterhelp-rm551382` (aplicacao) e `postgres-disasterhelp-rm5
 
 ## Descricao da solucao
 
-O DisasterHelp permite registrar usuarios e desastres naturais (enchentes, ondas de calor,
-tempestades, etc.), informando tipo, descricao, regiao afetada e data prevista. A ideia e
-centralizar informacoes de eventos climaticos para apoio a prevencao e resposta.
+O tema da Global Solution 2026/1 e a **Economia Espacial** ("O espaco e a nova fronteira"): usar a
+exploracao espacial e a infraestrutura orbital para resolver problemas reais aqui na Terra. Um dos
+eixos propostos e justamente **Agro & Clima - monitoramento por satelite para previsao climatica e
+prevencao de desastres**, e e nesse eixo que o DisasterHelp se posiciona.
+
+O **DisasterHelp** e uma plataforma que centraliza informacoes de **eventos climaticos e desastres
+naturais** (enchentes, ondas de calor, tempestades, deslizamentos, etc.). A ideia e que esses
+eventos possam ser alimentados a partir de **dados de monitoramento por satelite** (sensoriamento
+remoto, imagens orbitais, previsao climatica) e fiquem disponiveis numa API central, apoiando a
+**prevencao, o alerta e a resposta rapida** a regioes afetadas - inclusive areas remotas, que sao
+um dos focos da conectividade via satelite.
+
+Cada evento registra tipo, descricao, regiao afetada, data prevista e o usuario responsavel pelo
+cadastro. Nesta entrega de DevOps, o foco e **conteinerizar e colocar essa solucao em nuvem** com
+boas praticas (imagem personalizada, usuario nao-root, rede e volume dedicados, persistencia em
+banco).
 
 A solucao roda em dois containers Docker orquestrados por Docker Compose, na mesma rede
 (`disasterhelp-net`):
