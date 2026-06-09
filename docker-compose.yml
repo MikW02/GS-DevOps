@@ -1,0 +1,60 @@
+# ============================================================
+# DisasterHelp - Global Solution DevOps
+# Dois containers integrados: App (Java/Spring Boot) + Banco (Postgres)
+# Ambos na mesma rede, em modo background (docker compose up -d)
+# RM do representante: 551382
+# ============================================================
+
+services:
+
+  # ---------- Container do BANCO DE DADOS ----------
+  postgres-db:
+    image: postgres:16
+    container_name: postgres-disasterhelp-rm551382
+    environment:
+      POSTGRES_DB: disasterdb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres123
+    ports:
+      - "5432:5432"                 # porta exposta para acesso externo ao banco
+    volumes:
+      - disasterhelp_pgdata:/var/lib/postgresql/data   # volume nomeado (persistencia)
+    networks:
+      - disasterhelp-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d disasterdb"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ---------- Container da APLICACAO (Java) ----------
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile          # gera imagem personalizada
+    image: disasterhelp-app:rm551382
+    container_name: app-disasterhelp-rm551382
+    depends_on:
+      postgres-db:
+        condition: service_healthy
+    environment:
+      APP_NAME: DisasterHelpAPI
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-db:5432/disasterdb
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres123
+      SPRING_DATASOURCE_DRIVER_CLASS_NAME: org.postgresql.Driver
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_JPA_DATABASE_PLATFORM: org.hibernate.dialect.PostgreSQLDialect
+    ports:
+      - "8080:8080"                 # porta exposta para acesso a aplicacao
+    networks:
+      - disasterhelp-net
+
+# ---------- Rede compartilhada entre App e Banco ----------
+networks:
+  disasterhelp-net:
+    driver: bridge
+
+# ---------- Volume nomeado ----------
+volumes:
+  disasterhelp_pgdata:
