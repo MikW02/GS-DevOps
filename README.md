@@ -168,15 +168,28 @@ docker container exec -it postgres-disasterhelp-rm551382 psql -U postgres -d dis
 No psql:
 
 ```
-\dt
-\d desastres
-SELECT * FROM desastres;
-SELECT * FROM usuario;
+\dt            -- lista as duas tabelas: usuario e desastres
+\d desastres   -- mostra a coluna usuario_id e a FK para usuario(id)
+```
 
-SELECT d.id, d.tipo, d.regiao, d.usuario_id, u.nome AS responsavel
+Todos os dados da tabela de eventos climaticos (com o usuario responsavel pelo registro):
+
+```
+SELECT d.id, d.tipo, d.descricao, d.regiao, d.data_prevista, d.usuario_id, u.nome AS responsavel
 FROM desastres d
 LEFT JOIN usuario u ON u.id = d.usuario_id
 ORDER BY d.id;
+```
+
+Todos os dados da tabela de usuarios:
+
+```
+SELECT * FROM usuario ORDER BY id;
+```
+
+Para sair do psql:
+
+```
 \q
 ```
 
