@@ -1,0 +1,67 @@
+<mxfile host="app.diagrams.net" type="device">
+  <diagram name="Arquitetura DisasterHelp" id="arch-disasterhelp">
+    <mxGraphModel dx="1100" dy="650" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1150" pageHeight="620" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <mxCell id="title" value="Arquitetura Macro - DisasterHelp  (DevOps Tools &amp; Cloud Computing)" style="text;html=1;fontSize=18;fontStyle=1;align=center;verticalAlign=middle;" vertex="1" parent="1">
+          <mxGeometry x="230" y="10" width="820" height="30" as="geometry" />
+        </mxCell>
+
+        <mxCell id="azure" value="Microsoft Azure  -  Azure for Students" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#e6f2fb;strokeColor=#1f78b4;dashed=1;verticalAlign=top;fontStyle=1;fontSize=13;fontColor=#1f5b86;arcSize=4;" vertex="1" parent="1">
+          <mxGeometry x="250" y="60" width="840" height="470" as="geometry" />
+        </mxCell>
+
+        <mxCell id="vm" value="Maquina Virtual Linux  -  Ubuntu 24.04 + Docker Engine   (IP publico:  portas 22 / 8080 / 5432)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#f5f5f5;strokeColor=#666666;verticalAlign=top;fontStyle=1;fontSize=12;fontColor=#333333;arcSize=3;" vertex="1" parent="1">
+          <mxGeometry x="300" y="120" width="740" height="390" as="geometry" />
+        </mxCell>
+
+        <mxCell id="net" value="Rede Docker:  disasterhelp-net  (bridge)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;dashed=1;verticalAlign=top;fontStyle=2;fontSize=12;fontColor=#7f6000;arcSize=4;" vertex="1" parent="1">
+          <mxGeometry x="340" y="195" width="660" height="200" as="geometry" />
+        </mxCell>
+
+        <mxCell id="app" value="Container da Aplicacao&#10;app-disasterhelp-rm551382&#10;&#10;Java 17 - Spring Boot 3.1.5&#10;Imagem personalizada (Dockerfile)&#10;Usuario: disasteruser (nao-root)&#10;WORKDIR: /opt/disasterhelp&#10;Porta: 8080" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;align=center;verticalAlign=middle;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="375" y="235" width="270" height="140" as="geometry" />
+        </mxCell>
+
+        <mxCell id="db" value="Container do Banco de Dados&#10;postgres-disasterhelp-rm551382&#10;&#10;PostgreSQL 16 (imagem oficial)&#10;Banco: disasterdb&#10;Tabelas: usuario, desastres&#10;Relacionamento FK (usuario_id)&#10;Porta: 5432" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;align=center;verticalAlign=middle;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="700" y="235" width="270" height="140" as="geometry" />
+        </mxCell>
+
+        <mxCell id="vol" value="Volume nomeado&#10;disasterhelp_pgdata&#10;(persistencia dos dados)" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="755" y="425" width="160" height="70" as="geometry" />
+        </mxCell>
+
+        <mxCell id="user" value="Usuario&#10;(Navegador / Swagger / Postman)" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="60" y="170" width="50" height="100" as="geometry" />
+        </mxCell>
+
+        <mxCell id="admin" value="Equipe DevOps&#10;(gerencia / deploy)" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=11;" vertex="1" parent="1">
+          <mxGeometry x="60" y="370" width="50" height="100" as="geometry" />
+        </mxCell>
+
+        <mxCell id="e_user_app" value="HTTP / REST   :8080" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=classic;strokeColor=#2d7600;strokeWidth=2;fontSize=11;fontColor=#2d7600;fontStyle=1;" edge="1" parent="1" source="user" target="app">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="e_admin_vm" value="SSH   :22" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=classic;strokeColor=#b46504;strokeWidth=2;dashed=1;fontSize=11;fontColor=#b46504;fontStyle=1;" edge="1" parent="1" source="admin" target="vm">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="e_app_db" value="JDBC PostgreSQL   :5432" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=classic;startArrow=none;strokeColor=#3b5b86;strokeWidth=2;fontSize=11;fontColor=#3b5b86;fontStyle=1;" edge="1" parent="1" source="app" target="db">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="e_db_vol" value="le / grava" style="edgeStyle=orthogonalEdgeStyle;rounded=1;html=1;endArrow=classic;strokeColor=#3b5b86;strokeWidth=2;fontSize=10;fontColor=#3b5b86;" edge="1" parent="1" source="db" target="vol">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <mxCell id="legend" value="Fluxo:  o usuario acessa a API (porta 8080) na VM do Azure.  O container da aplicacao Java conversa com o container PostgreSQL pela rede interna disasterhelp-net (porta 5432).  Os dados ficam no volume nomeado, garantindo persistencia.  A equipe acessa a VM por SSH (porta 22)." style="text;html=1;align=left;verticalAlign=middle;fontSize=11;fontColor=#444444;spacingLeft=6;" vertex="1" parent="1">
+          <mxGeometry x="250" y="545" width="840" height="50" as="geometry" />
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
